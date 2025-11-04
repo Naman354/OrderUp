@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:client/features/admin/presentation/screens/admin_screen.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,16 +49,28 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         : ref.watch(registerProvider(signupParams));
 
     signupAsync.whenData((session) {
-      
       if (session != null) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
-        );
-        ref.read(signupParamsProvider.notifier).state =
-            null; // Reset params to avoid navigating repeatedly
+
+        final user = jsonDecode(session.user);
+
+        final role = user['role'] ?? '';
+
+        if (role == 'admin') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const AdminScreen()),
+          );
+        } 
+        else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const HomeScreen()),
+          );
+        }
+        ref.read(signupParamsProvider.notifier).state = null;
       }
     });
+
 
 
     return Scaffold(
