@@ -6,7 +6,8 @@ import 'signup_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../menu/presentation/screens/home_screen.dart';
 
-final loginParamsProvider = StateProvider<Map<String, String>?>((ref) => null);
+// StateProvider to hold current login params
+final loginParamsProvider = StateProvider<Map<String, String>?>( (ref) => null);
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -32,25 +33,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       'email': _emailController.text.trim(),
       'password': _passwordController.text.trim(),
     };
+
     ref.read(loginParamsProvider.notifier).state = params;
   }
 
   @override
   Widget build(BuildContext context) {
     final loginParams = ref.watch(loginParamsProvider);
+
     final loginAsync = loginParams == null
         ? const AsyncValue.data(null)
         : ref.watch(loginProvider(loginParams));
 
-    // On login success navigate automatically
+    // Navigate to Home if login successful and reset params to avoid repeated navigation
     loginAsync.whenData((session) {
       if (session != null) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const HomeScreen()),
         );
-        ref.read(loginParamsProvider.notifier).state =
-            null; // Reset params to avoid navigating repeatedly
+        ref.read(loginParamsProvider.notifier).state = null;
       }
     });
 
@@ -90,18 +92,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           color: AppColors.mainOrange,
                           borderRadius: BorderRadius.circular(40),
                         ),
-                        child: const Center(
-                          child: Text('🍔', style: TextStyle(fontSize: 40)),
-                        ),
+                        child: const Center(child: Text('🍔', style: TextStyle(fontSize: 40))),
                       ),
                       const SizedBox(height: 24),
                       const Text(
                         'Welcome Back',
                         style: TextStyle(
-                          color: AppColors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                        ),
+                            color: AppColors.white,
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
                       const Text(
@@ -122,17 +121,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         controller: _passwordController,
                         isPassword: !_isPasswordVisible,
                         suffixIcon: IconButton(
-                          icon: Icon(
-                            _isPasswordVisible
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            color: AppColors.grey,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _isPasswordVisible = !_isPasswordVisible;
-                            });
-                          },
+                          icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                              color: AppColors.grey),
+                          onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -142,10 +133,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           onPressed: () {},
                           child: const Text(
                             'Forgot Password?',
-                            style: TextStyle(
-                              color: AppColors.mainOrange,
-                              fontSize: 14,
-                            ),
+                            style: TextStyle(color: AppColors.mainOrange, fontSize: 14),
                           ),
                         ),
                       ),
@@ -154,20 +142,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         width: double.infinity,
                         child: loginAsync.isLoading
                             ? const Center(
-                                child: CircularProgressIndicator(
-                                  color: AppColors.mainOrange,
-                                ),
+                                child: CircularProgressIndicator(color: AppColors.mainOrange),
                               )
                             : ElevatedButton(
                                 onPressed: _handleLogin,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.mainOrange,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                   elevation: 8,
                                 ),
                                 child: const Text(
@@ -186,31 +168,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           padding: const EdgeInsets.only(bottom: 8),
                           child: Text(
                             loginAsync.error.toString(),
-                            style: const TextStyle(
-                              color: Colors.redAccent,
-                              fontSize: 14,
-                            ),
+                            style: const TextStyle(color: Colors.redAccent, fontSize: 14),
                           ),
                         ),
                       Row(
                         children: [
                           Expanded(
-                            child: Divider(
-                              color: AppColors.grey.withOpacity(0.3),
-                            ),
-                          ),
+                              child: Divider(color: AppColors.grey.withOpacity(0.3))),
                           const Padding(
                             padding: EdgeInsets.symmetric(horizontal: 16),
-                            child: Text(
-                              'OR',
-                              style: TextStyle(color: AppColors.grey),
-                            ),
+                            child: Text('OR', style: TextStyle(color: AppColors.grey)),
                           ),
                           Expanded(
-                            child: Divider(
-                              color: AppColors.grey.withOpacity(0.3),
-                            ),
-                          ),
+                              child: Divider(color: AppColors.grey.withOpacity(0.3))),
                         ],
                       ),
                       const SizedBox(height: 24),
@@ -224,9 +194,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primaryDark,
                                 foregroundColor: AppColors.white,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 12,
-                                ),
+                                padding: const EdgeInsets.symmetric(vertical: 12),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -242,15 +210,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primaryDark,
                                 foregroundColor: AppColors.white,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 12,
-                                ),
+                                padding: const EdgeInsets.symmetric(vertical: 12),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
                             ),
-                          ),
+                          )
                         ],
                       ),
                       const SizedBox(height: 24),
@@ -259,27 +225,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         children: [
                           const Text(
                             "Don't have an account? ",
-                            style: TextStyle(
-                              color: AppColors.grey,
-                              fontSize: 14,
-                            ),
+                            style: TextStyle(color: AppColors.grey, fontSize: 14),
                           ),
                           GestureDetector(
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                  builder: (_) => const SignupScreen(),
-                                ),
+                                MaterialPageRoute(builder: (_) => const SignupScreen()),
                               );
                             },
                             child: const Text(
                               'Sign Up',
                               style: TextStyle(
-                                color: AppColors.mainOrange,
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                              ),
+                                  color: AppColors.mainOrange,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold),
                             ),
                           ),
                         ],

@@ -45,6 +45,18 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         ? const AsyncValue.data(null)
         : ref.watch(registerProvider(signupParams));
 
+    signupAsync.whenData((session) {
+      
+      if (session != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+        ref.read(signupParamsProvider.notifier).state =
+            null; // Reset params to avoid navigating repeatedly
+      }
+    });
+
 
     return Scaffold(
       backgroundColor: AppColors.primaryDark,

@@ -1,4 +1,4 @@
-import 'package:client/features/auth/data/api/server.dart';
+import 'package:client/features/auth/data/datasource/server.dart';
 import 'package:client/features/auth/data/repositories/user_repo_impl.dart';
 import 'package:client/features/auth/domain/usecases/login_usecase.dart';
 import 'package:client/features/auth/domain/usecases/register_usecase.dart';
