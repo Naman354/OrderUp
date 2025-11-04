@@ -1,4 +1,4 @@
-import 'package:client/features/auth/data/api/server.dart';
+import 'package:client/features/auth/data/datasource/server.dart';
 import 'package:client/features/auth/data/models/session_model.dart';
 import 'package:client/features/auth/domain/entities/session_entity.dart';
 import 'package:client/features/auth/domain/repository/user_repo.dart';
