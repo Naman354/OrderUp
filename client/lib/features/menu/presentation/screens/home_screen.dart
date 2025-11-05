@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../domain/entities/menu_item_entity.dart';
 
-
 class HomeScreenContent extends ConsumerStatefulWidget {
   const HomeScreenContent({Key? key}) : super(key: key);
 
@@ -12,7 +11,7 @@ class HomeScreenContent extends ConsumerStatefulWidget {
   ConsumerState<HomeScreenContent> createState() => _HomeScreenContentState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _HomeScreenContentState extends ConsumerState<HomeScreenContent> {
   int _selectedBottomIndex = 0;
   int _selectedCatIndex = 0;
   List<String> _categories = ['All'];
@@ -32,8 +31,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           return _buildContent(context, menuItems, trendingState);
         },
       ),
-      data: (menuItems) => _buildContent(context, menuItems),
-      error: (_, __) => _buildContent(context, placeholderMenu),
+      // bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
 
@@ -58,12 +56,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return SafeArea(
       child: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeader(),
-              const SizedBox(height: 20),
+              const SizedBox(height: 30),
               trendingState.when(
                 data: (trendingItems) => _buildTrendingSection(trendingItems),
                 loading: () => _buildTrendingLoadingPlaceholder(),
@@ -74,12 +72,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 "Popular Food Items",
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.3,
                 ),
               ),
               const SizedBox(height: 16),
               _buildFoodGrid(filteredMenuItems),
+              const SizedBox(height: 30),
             ],
           ),
         ),
@@ -91,13 +91,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 18),
         Row(
           children: [
             const Icon(
               Icons.location_on_outlined,
               color: Colors.white70,
-              size: 17,
+              size: 18,
             ),
             const SizedBox(width: 6),
             Text(
@@ -106,60 +105,71 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.w400,
+                letterSpacing: 0.3,
               ),
             ),
-            const SizedBox(width: 10),
-            const Icon(Icons.expand_more, color: Colors.white38, size: 16),
+            const SizedBox(width: 6),
+            const Icon(Icons.expand_more, color: Colors.white38, size: 18),
             const Spacer(),
             CircleAvatar(
-              radius: 16,
+              radius: 18,
               backgroundImage: NetworkImage(
                 "https://i.imgur.com/your_avatar_image.jpg",
               ),
             ),
           ],
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 6),
         const Text(
           "Locate bukas in your area today.",
-          style: TextStyle(color: Colors.white38, fontSize: 13),
+          style: TextStyle(color: Colors.white38, fontSize: 14),
         ),
-        const SizedBox(height: 18),
+        const SizedBox(height: 22),
         Text(
           "Good evening Mimi...",
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
+            fontSize: 26,
+            fontWeight: FontWeight.w900,
             fontStyle: FontStyle.italic,
+            letterSpacing: 0.3,
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 20),
         TextField(
           decoration: InputDecoration(
             filled: true,
-            fillColor: Color(0xFF1F1F2E),
-            prefixIcon: const Icon(Icons.search, color: Colors.white38),
+            fillColor: const Color(0xFF1F1F2E),
+            prefixIcon: const Icon(
+              Icons.search,
+              color: Colors.white38,
+              size: 26,
+            ),
             hintText: "Search here",
-            hintStyle: const TextStyle(color: Colors.white54, fontSize: 16),
+            hintStyle: const TextStyle(color: Colors.white54, fontSize: 18),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(20),
               borderSide: BorderSide.none,
             ),
             contentPadding: const EdgeInsets.symmetric(
-              vertical: 0,
-              horizontal: 16,
+              vertical: 14,
+              horizontal: 20,
             ),
           ),
-          style: const TextStyle(color: Colors.white, fontSize: 16),
+          style: const TextStyle(color: Colors.white, fontSize: 18),
         ),
-        const SizedBox(height: 22),
+        const SizedBox(height: 24),
         SizedBox(
-          height: 54,
+          height: 60,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: _categories.length,
-            itemBuilder: (context, index) => _buildCategoryItem(index),
+            itemBuilder: (context, index) => Padding(
+              padding: EdgeInsets.only(
+                right: index == _categories.length - 1 ? 0 : 14,
+              ),
+              child: _buildCategoryItem(index),
+            ),
           ),
         ),
       ],
@@ -170,21 +180,30 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final selected = index == _selectedCatIndex;
     final category = _categories[index];
     return GestureDetector(
-      onTap: () {
-        setState(() => _selectedCatIndex = index);
-      },
-      child: Container(
-        margin: const EdgeInsets.only(right: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+      onTap: () => setState(() => _selectedCatIndex = index),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         decoration: BoxDecoration(
-          color: selected ? Colors.white : const Color(0xFF29293A),
-          borderRadius: BorderRadius.circular(14),
+          color: selected ? Colors.deepOrange : const Color(0xFF29293A),
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: selected
+              ? [
+                  BoxShadow(
+                    color: Colors.deepOrange.withOpacity(0.4),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : null,
         ),
         child: Text(
           category,
           style: TextStyle(
-            color: selected ? Colors.black : Colors.white,
-            fontWeight: FontWeight.w600,
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+            color: selected ? Colors.white : Colors.white70,
+            letterSpacing: 0.4,
           ),
         ),
       ),
@@ -198,154 +217,72 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
-            Text(
+          children: [
+            const Text(
               "Top rated bukas",
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 20,
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Text(
-              "See all",
-              style: TextStyle(
-                color: Colors.deepOrange,
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
+            TextButton(
+              onPressed: () {
+                // TODO: handle see all tap
+              },
+              child: const Text(
+                "See all",
+                style: TextStyle(
+                  color: Colors.deepOrange,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
         ),
         const SizedBox(height: 18),
         SizedBox(
-          height: 225,
+          height: 240,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: trendingItems.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 14),
-            itemBuilder: (context, index) {
-              final item = trendingItems[index];
-              return Container(
-                width: 200,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF28283D),
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ImageWithShimmer(
-                      imageUrl: item.imageUrl,
-                      height: 120,
-                      width: double.infinity,
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(22),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            item.name,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 15,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            item.category ?? '',
-                            style: const TextStyle(
-                              color: Colors.white54,
-                              fontSize: 13,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            "₹${item.price}",
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
+            separatorBuilder: (_, __) => const SizedBox(width: 16),
+            itemBuilder: (context, index) =>
+                _buildTrendingCard(trendingItems[index]),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildFoodGrid(List<MenuItemEntity> menuItems) {
-    return GridView.builder(
-      padding: const EdgeInsets.all(0),
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: menuItems.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisExtent: 260,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-      ),
-      itemBuilder: (context, index) {
-        final item = menuItems[index];
-        return _buildFoodItemCard(item);
-      },
-    );
-  }
-
-  Widget _buildFoodItemCard(MenuItemEntity item) {
+  Widget _buildTrendingCard(MenuItemEntity item) {
     return Container(
+      width: 230,
       decoration: BoxDecoration(
-        color: const Color(0xFF1F1F2E),
-        borderRadius: BorderRadius.circular(20),
+        color: const Color(0xFF29293A),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(2, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Stack(
-            children: [
-              ImageWithShimmer(
-                imageUrl: item.imageUrl,
-                height: 140,
-                width: double.infinity,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(20),
-                ),
-              ),
-              Positioned(
-                top: 12,
-                right: 12,
-                child: Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.9),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.favorite_border,
-                    color: Colors.black87,
-                    size: 16,
-                  ),
-                ),
-              ),
-            ],
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            child: ImageWithShimmer(
+              imageUrl: item.imageUrl,
+              height: 140,
+              width: double.infinity,
+            ),
           ),
           Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -353,24 +290,102 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   item.name,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Text(
                   item.category ?? '',
-                  style: const TextStyle(color: Colors.white54, fontSize: 13),
+                  style: const TextStyle(color: Colors.white54, fontSize: 14),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 10),
                 Text(
                   "₹${item.price}",
                   style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 15,
+                    color: Colors.deepOrange,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 20,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFoodGrid(List<MenuItemEntity> menuItems) {
+    return GridView.builder(
+      padding: EdgeInsets.zero,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: menuItems.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisExtent: 280,
+        crossAxisSpacing: 18,
+        mainAxisSpacing: 18,
+      ),
+      itemBuilder: (context, index) => _buildFoodCard(menuItems[index]),
+    );
+  }
+
+  Widget _buildFoodCard(MenuItemEntity item) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF29293A),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.30),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            child: ImageWithShimmer(
+              imageUrl: item.imageUrl,
+              height: 160,
+              width: double.infinity,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.name,
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Colors.white,
+                    letterSpacing: 0.3,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  item.category ?? '',
+                  style: const TextStyle(color: Colors.white54, fontSize: 14),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  "₹${item.price}",
+                  style: const TextStyle(
+                    color: Colors.deepOrange,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
                   ),
                 ),
               ],
@@ -386,20 +401,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF1F1F2E),
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
+          topLeft: Radius.circular(30),
+          topRight: Radius.circular(30),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, -5),
+            color: Colors.black.withOpacity(0.35),
+            blurRadius: 15,
+            offset: const Offset(0, -7),
           ),
         ],
       ),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -418,32 +433,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _buildNavItem(IconData icon, String label, int index) {
     final isSelected = _selectedBottomIndex == index;
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedBottomIndex = index;
-        });
-      },
+      onTap: () => setState(() => _selectedBottomIndex = index),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               icon,
-              color: isSelected
-                  ? Colors.deepOrange
-                  : Colors.white.withOpacity(0.4),
-              size: 24,
+              size: 26,
+              color: isSelected ? Colors.deepOrange : Colors.white54,
             ),
             const SizedBox(height: 4),
             Text(
               label,
               style: TextStyle(
-                color: isSelected
-                    ? Colors.deepOrange
-                    : Colors.white.withOpacity(0.4),
-                fontSize: 11,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                fontSize: 13,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                color: isSelected ? Colors.deepOrange : Colors.white54,
               ),
             ),
           ],
@@ -454,24 +461,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildFloatingActionButton() {
     return Container(
-      width: 56,
-      height: 56,
+      width: 58,
+      height: 58,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
             color: Colors.deepOrange.withOpacity(0.5),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
           ),
         ],
+        shape: BoxShape.circle,
       ),
-      child: const Icon(Icons.qr_code_scanner, color: Colors.white, size: 28),
+      child: const Icon(Icons.qr_code_scanner, color: Colors.white, size: 30),
     );
   }
 }
@@ -480,20 +487,18 @@ class ImageWithShimmer extends StatelessWidget {
   final String imageUrl;
   final double height;
   final double width;
-  final BorderRadius borderRadius;
 
   const ImageWithShimmer({
     required this.imageUrl,
     required this.height,
     required this.width,
-    this.borderRadius = BorderRadius.zero,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: borderRadius,
+      borderRadius: BorderRadius.circular(24),
       child: Image.network(
         imageUrl,
         height: height,
@@ -519,7 +524,7 @@ class ImageWithShimmer extends StatelessWidget {
           child: Icon(
             Icons.fastfood,
             color: Colors.white.withOpacity(0.4),
-            size: 32,
+            size: 36,
           ),
         ),
       ),
@@ -533,10 +538,10 @@ Widget _buildLoadingPlaceholder() {
       baseColor: Colors.grey.shade900,
       highlightColor: Colors.grey.shade700,
       child: Container(
-        width: 220,
-        height: 220,
+        width: 240,
+        height: 240,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(36),
           color: Colors.grey.shade800,
         ),
       ),
@@ -544,22 +549,21 @@ Widget _buildLoadingPlaceholder() {
   );
 }
 
-
 Widget _buildTrendingLoadingPlaceholder() {
   return SizedBox(
-    height: 225,
+    height: 240,
     child: ListView.separated(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       itemCount: 3,
-      separatorBuilder: (_, __) => const SizedBox(width: 14),
+      separatorBuilder: (_, __) => const SizedBox(width: 16),
       itemBuilder: (_, __) => Shimmer.fromColors(
         baseColor: Colors.grey.shade900,
         highlightColor: Colors.grey.shade700,
         child: Container(
-          width: 200,
+          width: 230,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(22),
+            borderRadius: BorderRadius.circular(24),
             color: Colors.grey.shade800,
           ),
         ),
