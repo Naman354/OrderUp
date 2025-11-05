@@ -1,4 +1,5 @@
 import 'package:client/features/menu/presentation/providers/menu_provider.dart';
+import 'package:client/features/profile/features/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/menu_item_entity.dart';
@@ -479,6 +480,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         setState(() {
           _selectedBottomIndex = index;
         });
+        
+        
+        if (index == 3) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ProfileScreen(),
+            ),
+          );
+        }
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
