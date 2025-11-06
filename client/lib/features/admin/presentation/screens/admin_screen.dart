@@ -251,23 +251,6 @@ class _AdminScreenState extends ConsumerState<AdminScreen> {
             ),
           ),
           
-          // Logout Button
-          Container(
-            margin: const EdgeInsets.only(left: 4),
-            decoration: BoxDecoration(
-              color: Colors.red.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: IconButton(
-              icon: const Icon(
-                Icons.logout,
-                color: Colors.red,
-                size: 22,
-              ),
-              onPressed: _logout,
-              tooltip: 'Logout',
-            ),
-          ),
         ],
       ),
     );

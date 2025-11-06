@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+//TODO: FUnctionality to edit menu items add karni hai
 class AdminMenuScreen extends StatefulWidget {
   const AdminMenuScreen({Key? key}) : super(key: key);
 
@@ -11,7 +11,6 @@ class _AdminMenuScreenState extends State<AdminMenuScreen> {
   String _selectedCategory = "All";
   final List<String> _categories = ["All", "Main Course", "Desserts", "Beverages", "Appetizers"];
 
-  // 
   final List<Map<String, dynamic>> _menuItems = [
     {
       "id": "1",
@@ -61,7 +60,7 @@ class _AdminMenuScreenState extends State<AdminMenuScreen> {
     }
     return _menuItems.where((item) => item["category"] == _selectedCategory).toList();
   }
-
+  
   @override
   Widget build(BuildContext context) {
     return Column(
