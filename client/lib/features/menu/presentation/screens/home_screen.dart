@@ -1,5 +1,6 @@
 import 'package:client/features/menu/presentation/providers/menu_provider.dart';
 import 'package:client/features/menu/presentation/screens/food_detail_screen.dart';
+import 'package:client/features/location/presentation/providers/location_provider.dart';
 import 'package:client/features/menu/presentation/screens/search_screen.dart';
 import 'package:client/features/order/presentation/providers/cart_provider.dart';
 import 'package:client/features/profile/features/providers/profile_provider.dart';
@@ -179,15 +180,71 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent> {
     );
   }
 
-  Widget _buildHeader() {
-    final profileAsync = ref.watch(profileProvider);
-    final cartItems = ref.watch(cartProvider);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Container(
+Widget _buildHeader() {
+  final profileAsync = ref.watch(profileProvider);
+  final cartItems = ref.watch(cartProvider);
+  final locationAsync = ref.watch(locationProvider); // ADD THIS
+  
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        children: [
+          locationAsync.when(  // REPLACE THE ENTIRE CONTAINER
+            data: (location) => Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.1),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.location_on,
+                    color: Colors.deepOrange.shade400,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 6),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            location.city,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(
+                            Icons.keyboard_arrow_down,
+                            color: Colors.white.withOpacity(0.6),
+                            size: 18,
+                          ),
+                        ],
+                      ),
+                      if (location.country.isNotEmpty)
+                        Text(
+                          location.country,
+                          style: TextStyle(
+                            color: Colors.grey.shade400,
+                            fontSize: 11,
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            loading: () => Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.05),
@@ -207,23 +264,48 @@ class _HomeScreenContentState extends ConsumerState<HomeScreenContent> {
                   ),
                   const SizedBox(width: 6),
                   const Text(
-                    "Mushin, Lagos",
+                    "Loading...",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(width: 4),
+                ],
+              ),
+            ),
+            error: (_, __) => Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.1),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                   Icon(
-                    Icons.keyboard_arrow_down,
-                    color: Colors.white.withOpacity(0.6),
+                    Icons.location_on,
+                    color: Colors.deepOrange.shade400,
                     size: 18,
+                  ),
+                  const SizedBox(width: 6),
+                  const Text(
+                    "Unknown",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
             ),
-            const Spacer(),
+          ),
+          const Spacer(),
 
             GestureDetector(
               onTap: () => Navigator.of(context).pushNamed('cart'),
