@@ -250,7 +250,7 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
       ),
     );
   }
-
+    
   Widget _buildStepperButton(IconData icon, VoidCallback onPressed) {
     return GestureDetector(
       onTap: onPressed,
