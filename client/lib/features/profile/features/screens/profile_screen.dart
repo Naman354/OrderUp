@@ -3,6 +3,7 @@ import 'package:client/features/auth/presentation/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:client/features/auth/presentation/screens/login_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -335,7 +336,7 @@ class ProfileScreen extends ConsumerWidget {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(dialogContext);
+                context.pop();
               },
               child: const Text(
                 "Cancel",
@@ -345,7 +346,8 @@ class ProfileScreen extends ConsumerWidget {
             TextButton(
               onPressed: () async {
                 // Close dialog first
-                Navigator.pop(dialogContext);
+                context.pop();
+                ;
 
                 // Show loading indicator
                 showDialog(
@@ -368,18 +370,14 @@ class ProfileScreen extends ConsumerWidget {
 
                 // Close loading indicator
                 if (context.mounted) {
-                  Navigator.pop(context);
+                  context.pop();
+                  ;
                 }
 
                 if (success) {
                   // Navigate to login screen and clear entire navigation stack
                   if (context.mounted) {
-                    Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(),
-                      ),
-                      (route) => false,
-                    );
+                    context.go('/login');
                   }
                 } else {
                   // Show error message

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
 //TODO: FUnctionality to edit menu items add karni hai
 class AdminMenuScreen extends StatefulWidget {
   const AdminMenuScreen({Key? key}) : super(key: key);
@@ -9,7 +11,13 @@ class AdminMenuScreen extends StatefulWidget {
 
 class _AdminMenuScreenState extends State<AdminMenuScreen> {
   String _selectedCategory = "All";
-  final List<String> _categories = ["All", "Main Course", "Desserts", "Beverages", "Appetizers"];
+  final List<String> _categories = [
+    "All",
+    "Main Course",
+    "Desserts",
+    "Beverages",
+    "Appetizers",
+  ];
 
   final List<Map<String, dynamic>> _menuItems = [
     {
@@ -58,9 +66,11 @@ class _AdminMenuScreenState extends State<AdminMenuScreen> {
     if (_selectedCategory == "All") {
       return _menuItems;
     }
-    return _menuItems.where((item) => item["category"] == _selectedCategory).toList();
+    return _menuItems
+        .where((item) => item["category"] == _selectedCategory)
+        .toList();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -165,9 +175,7 @@ class _AdminMenuScreenState extends State<AdminMenuScreen> {
                     : const Color(0xFF1F1F2E),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: isSelected
-                      ? Colors.deepOrange
-                      : Colors.transparent,
+                  color: isSelected ? Colors.deepOrange : Colors.transparent,
                   width: 1.5,
                 ),
               ),
@@ -177,7 +185,9 @@ class _AdminMenuScreenState extends State<AdminMenuScreen> {
                   style: TextStyle(
                     color: isSelected ? Colors.deepOrange : Colors.white70,
                     fontSize: 14,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                    fontWeight: isSelected
+                        ? FontWeight.w600
+                        : FontWeight.normal,
                   ),
                 ),
               ),
@@ -230,7 +240,7 @@ class _AdminMenuScreenState extends State<AdminMenuScreen> {
             ),
           ),
           const SizedBox(width: 16),
-          
+
           // Details
           Expanded(
             child: Column(
@@ -249,7 +259,10 @@ class _AdminMenuScreenState extends State<AdminMenuScreen> {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: item["stock"]
                             ? Colors.green.withOpacity(0.2)
@@ -318,20 +331,15 @@ class _AdminMenuScreenState extends State<AdminMenuScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1F1F2E),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: const Text(
-          "Edit Item",
-          style: TextStyle(color: Colors.white),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text("Edit Item", style: TextStyle(color: Colors.white)),
         content: Text(
           "Edit functionality for ${item['name']} coming soon",
           style: const TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => context.pop(),
             child: const Text(
               "Close",
               style: TextStyle(color: Colors.deepOrange),
@@ -347,20 +355,15 @@ class _AdminMenuScreenState extends State<AdminMenuScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1F1F2E),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: const Text(
-          "Delete Item",
-          style: TextStyle(color: Colors.white),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text("Delete Item", style: TextStyle(color: Colors.white)),
         content: Text(
           "Are you sure you want to delete ${item['name']}?",
           style: const TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => context.pop(),
             child: const Text(
               "Cancel",
               style: TextStyle(color: Colors.white70),
@@ -368,7 +371,7 @@ class _AdminMenuScreenState extends State<AdminMenuScreen> {
           ),
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
+              context.pop();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text("${item['name']} deleted"),
@@ -378,10 +381,7 @@ class _AdminMenuScreenState extends State<AdminMenuScreen> {
             },
             child: const Text(
               "Delete",
-              style: TextStyle(
-                color: Colors.red,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
             ),
           ),
         ],
