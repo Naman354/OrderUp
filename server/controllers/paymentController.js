@@ -51,13 +51,12 @@ export const verifyPayment = async (req, res) => {
       return res.status(400).json({ success: false, message: "Payment verification failed" });
     }
 
-    // ✅ Update order with items + amount after payment success
     const updated = await Order.findOneAndUpdate(
       { razorpayOrderId: orderId },
       {
         paymentStatus: "paid",
         paymentId,
-        items,           
+        items,        
         totalAmount,
         status: "received",
         updatedAt: Date.now(),
@@ -75,6 +74,7 @@ export const verifyPayment = async (req, res) => {
       message: "Payment verified",
       order: updated,
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
