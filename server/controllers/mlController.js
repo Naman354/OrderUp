@@ -1,15 +1,26 @@
 import axios from "axios";
 
-const ML_MODEL_URL = "https://recommend-1-ex3f.onrender.com/predict_top10";
+const ML_MODEL_URL = "https://personal-recomendation-1.onrender.com/predict";
 
 export const getTop10Recommendations = async (req, res) => {
   try {
-    const inputData = req.body;
+    const { customer_id } = req.body;
 
-    const response = await axios.post(ML_MODEL_URL, inputData, {
-      headers: { "Content-Type": "application/json" },
-      timeout: 60000, // 10 sec timeout to avoid backend hang
-    });
+    if (!customer_id) {
+      return res.status(400).json({
+        success: false,
+        error: "customer_id is required",
+      });
+    }
+
+    const response = await axios.post(
+      ML_MODEL_URL,
+      { customer_id },
+      {
+        headers: { "Content-Type": "application/json" },
+        timeout: 60000, // 60 seconds timeout
+      }
+    );
 
     return res.status(200).json({
       success: true,
@@ -21,7 +32,10 @@ export const getTop10Recommendations = async (req, res) => {
     if (error.response) {
       return res.status(error.response.status).json({
         success: false,
-        error: error.response.data?.error || "Error from ML model.",
+        error:
+          error.response.data?.error ||
+          error.response.data?.detail ||
+          "Error from ML model.",
       });
     }
 

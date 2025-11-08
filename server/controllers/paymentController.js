@@ -42,7 +42,8 @@ export const verifyPayment = async (req, res) => {
   try {
     const { orderId, paymentId, signature, userId, items, totalAmount } = req.body;
 
-    const generatedSignature = crypto.createHmac("sha256", process.env.RAZORPAY_SECRET)
+    const generatedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_SECRET)
       .update(orderId + "|" + paymentId)
       .digest("hex");
 
@@ -50,22 +51,35 @@ export const verifyPayment = async (req, res) => {
       return res.status(400).json({ success: false, message: "Payment verification failed" });
     }
 
+    // ✅ Update order with items + amount after payment success
     const updated = await Order.findOneAndUpdate(
       { razorpayOrderId: orderId },
       {
         paymentStatus: "paid",
         paymentId,
+        items,           
+        totalAmount,
+        status: "received",
         updatedAt: Date.now(),
       },
       { new: true }
     );
-    if (io) io.to("admins").emit("orderUpdated", updated);
+
+    if (io) io.to("admins").emit("newOrder", updated);
 
     const userRoom = userId.toString();
     if (io) io.to(userRoom).emit("orderUpdated", updated);
 
-    return res.status(200).json({ success: true, message: "Payment verified", order: updated });
+    return res.status(200).json({
+      success: true,
+      message: "Payment verified",
+      order: updated,
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Verification error", error });
+    res.status(500).json({
+      success: false,
+      message: "Verification error",
+      error: error.message,
+    });
   }
 };
