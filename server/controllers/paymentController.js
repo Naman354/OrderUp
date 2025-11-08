@@ -40,7 +40,7 @@ export const createRazorpayOrder = async (req, res) => {
 
 export const verifyPayment = async (req, res) => {
   try {
-    const { orderId, paymentId, signature, userId } = req.body;
+    const { orderId, paymentId, signature, userId, items, totalAmount } = req.body;
 
     const generatedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_SECRET)
@@ -54,33 +54,43 @@ export const verifyPayment = async (req, res) => {
       });
     }
 
-    const updated = await Order.findOneAndUpdate(
-      { razorpayOrderId: orderId },
-      {
-        paymentStatus: "paid",
-        paymentId,
-        status: "received",
-        updatedAt: Date.now(),
-      },
-      { new: true }
-    );
+    // ✅ Fetch existing pending order
+    const existing = await Order.findOne({ razorpayOrderId: orderId });
 
-    // ✅ Notify admin
-    if (io) io.to("admins").emit("orderUpdated", updated);
+    if (!existing) {
+      return res.status(400).json({ success: false, message: "Order not found" });
+    }
 
-    // ✅ Notify this user
-    if (io) io.to(userId.toString()).emit("orderUpdated", updated);
+    // ✅ Update ONLY missing data
+    if (!existing.items || existing.items.length === 0) {
+      existing.items = items;
+    }
 
-    return res.status(200).json({
+    if (!existing.totalAmount || existing.totalAmount === 0) {
+      existing.totalAmount = totalAmount;
+    }
+
+    existing.paymentStatus = "paid";
+    existing.paymentId = paymentId;
+    existing.status = "received";
+    existing.updatedAt = Date.now();
+
+    await existing.save();
+
+    // ✅ Emit correct socket event
+    if (io) io.to("admins").emit("orderUpdated", existing);
+    if (io) io.to(userId.toString()).emit("orderUpdated", existing);
+
+    res.status(200).json({
       success: true,
       message: "Payment verified",
-      order: updated,
+      order: existing,
     });
-  } catch (err) {
+  } catch (error) {
     res.status(500).json({
       success: false,
       message: "Verification error",
-      error: err.message,
+      error: error.message,
     });
   }
 };
