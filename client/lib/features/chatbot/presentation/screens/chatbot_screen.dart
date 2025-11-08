@@ -22,7 +22,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
   }
 
   void _scrollToBottom() {
-    Future.delayed(const Duration(milliseconds: 100), () {
+    Future.delayed(const Duration(milliseconds: 200), () {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
@@ -33,12 +33,15 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
     });
   }
 
-  void _sendMessage() {
-    if (_messageController.text.trim().isNotEmpty) {
-      ref.read(chatbotProvider.notifier).sendMessage(_messageController.text);
-      _messageController.clear();
-      _scrollToBottom();
-    }
+  Future<void> _sendMessage() async {
+    final text = _messageController.text.trim();
+    if (text.isEmpty) return;
+
+    _messageController.clear();
+
+    await ref.read(chatbotProvider.notifier).sendMessage(text);
+
+    _scrollToBottom();
   }
 
   @override
@@ -52,38 +55,36 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
       builder: (context, scrollController) {
         return Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
+            gradient: const LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                const Color(0xFF0D0D14),
-                const Color(0xFF1A1A2E),
-                const Color(0xFF0D0D14),
+                Color(0xFF0D0D14),
+                Color(0xFF1A1A2E),
+                Color(0xFF0D0D14),
               ],
-              stops: const [0.0, 0.3, 1.0],
+              stops: [0.0, 0.3, 1.0],
             ),
             borderRadius: const BorderRadius.vertical(
               top: Radius.circular(32),
             ),
             border: Border.all(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white12,
               width: 1,
             ),
           ),
           child: Column(
             children: [
-              // Handle bar
               Container(
                 margin: const EdgeInsets.only(top: 12),
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white30,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
 
-              // Header
               Padding(
                 padding: const EdgeInsets.all(20),
                 child: Row(
@@ -147,7 +148,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                               Text(
                                 "Online",
                                 style: TextStyle(
-                                  color: Colors.white.withOpacity(0.6),
+                                  color: Colors.white54,
                                   fontSize: 14,
                                 ),
                               ),
@@ -208,12 +209,8 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                 ),
               ),
 
-              const Divider(
-                height: 1,
-                color: Colors.white10,
-              ),
+              const Divider(height: 1, color: Colors.white10),
 
-              // Messages
               Expanded(
                 child: messages.isEmpty
                     ? Center(
@@ -229,14 +226,14 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                               child: Icon(
                                 Icons.chat_bubble_outline_rounded,
                                 size: 64,
-                                color: Colors.white.withOpacity(0.3),
+                                color: Colors.white30,
                               ),
                             ),
                             const SizedBox(height: 24),
                             Text(
                               "Start a conversation",
                               style: TextStyle(
-                                color: Colors.white.withOpacity(0.6),
+                                color: Colors.white60,
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -262,7 +259,6 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                       ),
               ),
 
-              // Quick replies (optional)
               if (messages.length <= 1)
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 12),
@@ -296,16 +292,12 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                   ),
                 ),
 
-              // Input field
               Container(
                 padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF0D0D14),
+                decoration: const BoxDecoration(
+                  color: Color(0xFF0D0D14),
                   border: Border(
-                    top: BorderSide(
-                      color: Colors.white.withOpacity(0.1),
-                      width: 1,
-                    ),
+                    top: BorderSide(color: Colors.white12, width: 1),
                   ),
                 ),
                 child: SafeArea(
@@ -317,7 +309,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                             color: Colors.white.withOpacity(0.05),
                             borderRadius: BorderRadius.circular(24),
                             border: Border.all(
-                              color: Colors.white.withOpacity(0.1),
+                              color: Colors.white12,
                               width: 1,
                             ),
                           ),
@@ -326,9 +318,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                             style: const TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                               hintText: "Type your message...",
-                              hintStyle: TextStyle(
-                                color: Colors.white.withOpacity(0.4),
-                              ),
+                              hintStyle: TextStyle(color: Colors.white38),
                               border: InputBorder.none,
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 20,
@@ -399,14 +389,13 @@ class _MessageBubble extends StatelessWidget {
       child: Row(
         mainAxisAlignment:
             isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!isUser) ...[
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Color(0xFFFF8C42), Colors.deepOrange.shade700],
+                  colors: [Color(0xFFFF8C42), Colors.deepOrange],
                 ),
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -430,19 +419,16 @@ class _MessageBubble extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     gradient: isUser
-                        ? LinearGradient(
-                            colors: [
-                              Colors.deepOrange,
-                              Colors.deepOrange.shade700,
-                            ],
-                          )
+                        ? LinearGradient(colors: [
+                            Colors.deepOrange,
+                            Colors.deepOrangeAccent,
+                          ])
                         : null,
                     color: isUser ? null : Colors.white.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: isUser
-                          ? Colors.transparent
-                          : Colors.white.withOpacity(0.1),
+                      color:
+                          isUser ? Colors.transparent : Colors.white12,
                       width: 1,
                     ),
                   ),
@@ -459,7 +445,7 @@ class _MessageBubble extends StatelessWidget {
                 Text(
                   "${timestamp.hour.toString().padLeft(2, '0')}:${timestamp.minute.toString().padLeft(2, '0')}",
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.4),
+                    color: Colors.white38,
                     fontSize: 12,
                   ),
                 ),
@@ -471,11 +457,11 @@ class _MessageBubble extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white12,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(
-                Icons.person_rounded,
+                Icons.person,
                 color: Colors.white,
                 size: 20,
               ),
@@ -507,10 +493,7 @@ class _QuickReplyChip extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.08),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.2),
-              width: 1,
-            ),
+            border: Border.all(color: Colors.white24, width: 1),
           ),
           child: Text(
             label,

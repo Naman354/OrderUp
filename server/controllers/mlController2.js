@@ -9,7 +9,7 @@ export const getChatbotResponse = async (req, res) => {
     if (!user_query) {
       return res.status(400).json({
         success: false,
-        error: "query field is required.",
+        error: "user_query is required",
       });
     }
 
@@ -18,30 +18,25 @@ export const getChatbotResponse = async (req, res) => {
       { user_query },
       {
         headers: { "Content-Type": "application/json" },
-        timeout: 30000, // 30 seconds timeout
+        timeout: 30000,
       }
     );
 
+    console.log("✅ Raw ML Response:", response.data);
+
+    const botText = response.data?.response || "Sorry, I couldn’t understand that.";
+
     return res.status(200).json({
       success: true,
-      chatbotResponse: response.data,
+      message: botText,
     });
-  } catch (error) {
-    console.error("Chatbot model error:", error.message);
 
-    if (error.response) {
-      return res.status(error.response.status).json({
-        success: false,
-        error:
-          error.response.data?.error ||
-          error.response.data?.detail ||
-          "Error from Chatbot ML model.",
-      });
-    }
+  } catch (error) {
+    console.error("❌ Chatbot Error:", error.message);
 
     return res.status(500).json({
       success: false,
-      error: "Failed to connect to Chatbot service. Please try again later.",
+      error: "Chatbot is unavailable. Try again later.",
     });
   }
 };

@@ -31,4 +31,6 @@ class ApiEndpoints {
   // ⚙️ ADMIN ENDPOINTS
   static const String adminMenu = "/admin/menu";
   static String adminMenuById(String id) => "/admin/menu/$id";
+
+  static const String chatEndpoint = '/ml/chat';
 }
