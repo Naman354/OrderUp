@@ -37,7 +37,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        // If we are NOT on Home screen, go to Home instead of leaving app
+        // If we are NOT on Home screen, go to Home instead of leaving app, very simple aur easy
         if (_selectedBottomIndex != 0) {
           setState(() {
             _selectedBottomIndex = 0;
@@ -94,41 +94,16 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
 
   Widget _buildNavItem(IconData icon, String label, int index) {
     final isSelected = _selectedBottomIndex == index;
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedBottomIndex = index;
-        });
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: isSelected
-                  ? Colors.deepOrange
-                  : Colors.white.withOpacity(0.4),
-              size: 24,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                color: isSelected
-                    ? Colors.deepOrange
-                    : Colors.white.withOpacity(0.4),
-                fontSize: 11,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-              ),
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            ),
-          ],
-        ),
+    return Expanded(
+      child: AnimatedNavItem(
+        icon: icon,
+        label: label,
+        isActive: isSelected,
+        onTap: () {
+          setState(() {
+            _selectedBottomIndex = index;
+          });
+        },
       ),
     );
   }
@@ -136,7 +111,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
   Widget _buildFloatingActionButton() {
     return GestureDetector(
       onTap: () {
-        context.push('/recommendations'); // ✅ Already correct
+        context.push('/recommendations');
       },
       child: Container(
         width: 56,
@@ -160,6 +135,71 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
           Icons.lightbulb_outline,
           color: Colors.white,
           size: 28,
+        ),
+      ),
+    );
+  }
+}
+
+class AnimatedNavItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool isActive;
+  final VoidCallback onTap;
+
+  const AnimatedNavItem({
+    Key? key,
+    required this.icon,
+    required this.label,
+    required this.isActive,
+    required this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.0, end: isActive ? -10.0 : 0.0),
+              duration: const Duration(milliseconds: 1000),
+              curve: Curves.elasticOut,
+              builder: (context, value, child) {
+                return Transform.translate(
+                  offset: Offset(0, value),
+                  child: Transform.scale(
+                    scale: isActive ? 1.25 : 1.0,
+                    child: Icon(
+                      icon,
+                      color: isActive
+                          ? Colors.deepOrange
+                          : Colors.white.withOpacity(0.4),
+                      size: 24,
+                    ),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                color: isActive
+                    ? Colors.deepOrange
+                    : Colors.white.withOpacity(0.4),
+                fontSize: 11,
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+              ),
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+          ],
         ),
       ),
     );
