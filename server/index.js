@@ -12,6 +12,7 @@ import mlRoutes from "./routes/mlRoutes.js";
 import morgan from "morgan";
 import helmet from "helmet";
 import { errorHandler } from "./middlewares/errorMiddleware.js";
+import { apiLimiter, authLimiter } from "./middlewares/rateLimiter.js";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -42,6 +43,9 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.disable("x-powered-by");
 
+app.use("/api/auth", authLimiter); 
+app.use("/api", apiLimiter);
+
 app.use('/api/auth', authRouter);
 app.use('/api', menuRoutes);
 app.use("/api/orders", orderRoutes);
@@ -52,7 +56,7 @@ app.get("/error-test", (req, res, next) => {
 });
 app.use(errorHandler);
 
+connectDB();
 server.listen(PORT,'0.0.0.0', () => {
-    connectDB();
     console.log(`✅ Server is running on port ${PORT}`);
 });
