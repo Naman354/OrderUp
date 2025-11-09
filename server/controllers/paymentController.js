@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import User from "../models/user.model.js";
 import { razorpay } from "../razorpay.js";
 import { Order } from "../models/orderModel.js";
 import { io } from "../index.js";
@@ -23,6 +24,18 @@ export const createRazorpayOrder = async (req, res, next) => {
       razorpayOrderId: razorpayOrder.id,
       paymentStatus: "pending",
       status: "received",
+    });
+
+    await User.findByIdAndUpdate(userId, {
+      $push: {
+        orders: {
+          orderId: order._id,
+          items,
+          totalAmount: amount,
+          paymentStatus: "pending",
+          razorpayOrderId: razorpayOrder.id,
+        },
+      },
     });
 
     if (io) io.to("admins").emit("newOrder", order);
@@ -65,6 +78,13 @@ export const verifyPayment = async (req, res, next) => {
       },
       { new: true }
     );
+
+    if (!updated) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found for verification",
+      });
+    }
 
     // ✅ Notify admin
     if (io) io.to("admins").emit("orderUpdated", updated);
