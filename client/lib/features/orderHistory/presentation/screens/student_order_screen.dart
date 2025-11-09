@@ -4,51 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-/* final dummyOrders = [
-  OrderEntity(
-    id: "1",
-    userId: "123",
-    userName: "You",
-    status: "delivered",
-    paymentStatus: "paid",
-    totalAmount: 150,
-    createdAt: DateTime.now().subtract(const Duration(hours: 2)),
-    items: [
-      OrderItemEntity(
-        itemId: "A1",
-        name: "Paneer Roll",
-        quantity: 1,
-        price: 80,
-        imageUrl: "https://spicecravings.com/wp-content/uploads/2020/12/Paneer-kathi-Roll-Featured-1.jpg",
-      ),
-      OrderItemEntity(
-        itemId: "B2",
-        name: "Cold Coffee",
-        quantity: 1,
-        price: 70,
-        imageUrl: "https://via.placeholder.com/64",
-      ),
-    ],
-  ),
-  OrderEntity(
-    id: "2",
-    userId: "123",
-    userName: "You",
-    status: "preparing",
-    paymentStatus: "pending",
-    totalAmount: 220,
-    createdAt: DateTime.now().subtract(const Duration(hours: 5)),
-    items: [
-      OrderItemEntity(
-        itemId: "C3",
-        name: "Margherita Pizza",
-        quantity: 1,
-        price: 220,
-        imageUrl: "https://via.placeholder.com/64",
-      ),
-    ],
-  ),
-]; */
+
 
 class StudentOrdersScreen extends ConsumerWidget {
   const StudentOrdersScreen({super.key});
@@ -56,22 +12,22 @@ class StudentOrdersScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ordersAsync = ref.watch(studentOrdersStreamProvider);
-    //final ordersAsync = AsyncValue.data(dummyOrders);
+    
     return Scaffold(
       backgroundColor: const Color(0xFF0D0D14),
       appBar: AppBar(
-  backgroundColor: const Color(0xFF1A1A24),
-  elevation: 1,
-  automaticallyImplyLeading: false, // <-- removes back button
-  title: const Text(
-    'My Orders',
-    style: TextStyle(
-      color: Colors.white,
-      fontSize: 18,
-      fontWeight: FontWeight.w600,
-    ),
-  ),
-),
+        backgroundColor: const Color(0xFF0D0D14),
+        elevation: 1,
+        automaticallyImplyLeading: false, 
+        title: const Text(
+          'My Orders',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
 
       body: ordersAsync.when(
         loading: () => const Center(
@@ -87,10 +43,19 @@ class StudentOrdersScreen extends ConsumerWidget {
           if (orders.isEmpty) {
             return _noOrdersUI();
           }
+
+          // Create a copy and sort by most recent first
+          final sortedOrders = List<OrderEntity>.from(orders);
+          sortedOrders.sort((a, b) {
+            final aDate = a.createdAt ?? DateTime(1970);
+            final bDate = b.createdAt ?? DateTime(1970);
+            return bDate.compareTo(aDate); // Most recent first
+          });
+
           return ListView.builder(
             padding: const EdgeInsets.all(16),
-            itemCount: orders.length,
-            itemBuilder: (_, i) => _orderCard(context, orders[i]),
+            itemCount: sortedOrders.length,
+            itemBuilder: (_, i) => _orderCard(context, sortedOrders[i]),
           );
         },
       ),
