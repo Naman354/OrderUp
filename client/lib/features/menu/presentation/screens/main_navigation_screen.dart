@@ -75,8 +75,12 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavItem(Icons.home, "Home", 0),
-              _buildNavItem(Icons.notifications_outlined, "Notif", 1),
+
+              Expanded(child: _buildNavItem(Icons.home, "Home", 0)),
+              Expanded(
+                child: _buildNavItem(Icons.notifications_outlined, "Orders", 1),
+              ),
+
               _buildFloatingActionButton(),
               _buildNavItem(Icons.favorite_border, "Fav", 2),
               _buildNavItem(Icons.person_outline, "Profile", 3),

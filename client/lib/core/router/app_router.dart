@@ -8,6 +8,7 @@ import 'package:client/features/order/presentation/screens/cart_screen.dart';
 import 'package:client/features/menu/presentation/screens/food_detail_screen.dart';
 import 'package:client/features/order/presentation/screens/order_success_screen.dart';
 import 'package:client/features/order/presentation/screens/order_summary_screen.dart';
+import 'package:client/features/orderHistory/presentation/screens/student_order_screen.dart';
 import 'package:client/features/payment/presentation/screens/razorpay_screen.dart';
 import 'package:client/features/recommendations/presentation/screens/recommendation_screen.dart';
 import 'package:client/features/menu/domain/entities/menu_item_entity.dart';
@@ -81,7 +82,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'home',
         builder: (context, state) => const MainNavigationScreen(),
       ),
-
+      GoRoute(
+        path: '/order-history', 
+        name: 'order-history', 
+        builder: (context, state) => const StudentOrdersScreen()
+      ),
       // Search
       GoRoute(
         path: '/search',
