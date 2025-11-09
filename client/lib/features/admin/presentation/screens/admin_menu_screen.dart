@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,63 +32,87 @@ class _AdminMenuScreenState extends ConsumerState<AdminMenuScreen> {
     final items = ref.watch(adminMenuProvider);
     final cats = _categoriesFrom(items);
 
-    return Column(
-      children: [
-        _header(context),
-        _categoryFilter(cats),
-        Expanded(child: _list(items)),
-      ],
-    );
+    return _list(items, cats);
   }
 
   Widget _header(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
-            "Menu Management",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
-              ),
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.deepOrange.withOpacity(0.3),
-                  blurRadius: 10,
-                  offset: Offset(0, 4),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Menu Management",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 26,
+                    fontWeight: FontWeight.w700,
+                    height: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "Manage your restaurant items",
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.6),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ],
             ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap: () => _openAddItemSheet(context),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  child: Row(
-                    children: [
-                      Icon(Icons.add, color: Colors.white, size: 20),
-                      SizedBox(width: 4),
-                      Text(
-                        "Add Item",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
+          ),
+          const SizedBox(width: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(14),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFFFF8C42), Colors.deepOrange.shade700],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.4),
+                    width: 1.5,
+                  ),
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(14),
+                    onTap: () => _openAddItemSheet(context),
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
                       ),
-                    ],
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.add_rounded,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                          SizedBox(width: 6),
+                          Text(
+                            "Add",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -144,17 +170,32 @@ class _AdminMenuScreenState extends ConsumerState<AdminMenuScreen> {
     );
   }
 
-  Widget _list(List<MenuModel> all) {
+  Widget _list(List<MenuModel> all, List<String> cats) {
     final items = _filtered(all);
-    if (items.isEmpty) {
-      return const Center(
-        child: Text("No items found", style: TextStyle(color: Colors.white54)),
-      );
-    }
+
     return ListView.builder(
       padding: const EdgeInsets.all(20),
-      itemCount: items.length,
-      itemBuilder: (_, i) => _tile(items[i]),
+      itemCount: items.length + 2, // +2 for header and category filter
+      itemBuilder: (_, index) {
+        if (index == 0) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: _header(context),
+          );
+        }
+        if (index == 1) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: _categoryFilter(cats),
+          );
+        }
+
+        final itemIndex = index - 2;
+        if (itemIndex >= items.length) {
+          return const SizedBox.shrink();
+        }
+        return _tile(items[itemIndex]);
+      },
     );
   }
 
