@@ -85,3 +85,14 @@ export const getRecommendations = async (req, res, next) => {
     return next(new CustomError("Failed to connect to ML service", 500));
   }
 };
+
+
+
+
+
+
+
+
+
+
+
