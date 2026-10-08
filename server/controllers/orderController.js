@@ -9,7 +9,7 @@ export const createOrder = async (req, res, next) => {
     const { userId, items, totalAmount } = req.body;
     const detailedItems = [];
     for (const item of items) {
-      const menuItem = await MenuItem.findById(item.itemId);
+      const menuItem = await MenuItem.findOne({ id: item.itemId });
       if (!menuItem) {
         throw new CustomError(`Invalid item: ${item.name}`, 400);
       }
@@ -82,7 +82,7 @@ export const updateOrderStatus = async (req, res, next) => {
 export const deleteOrder = async (req, res, next) => {
   try {
     const { id } = req.params; // orderId
-    const { userId } = req.body; 
+    const userId = req.user.id; // Get from verified JWT, not request body
 
     const order = await Order.findById(id);
     if (!order) {

@@ -5,7 +5,7 @@ dotenv.config();
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const sendResetPasswordEmail = async (email, token) => {
-  const resetUrl = `https://orderup-3xkw.onrender.com//api/auth/reset-password?token=${token}`;
+  const resetUrl = `https://orderup-3xkw.onrender.com/api/auth/reset-password?token=${token}`;
 
   const msg = {
     to: email,

@@ -1,5 +1,7 @@
 import express from 'express';
 import { loginHandler , verifyEmailHandler, registerHandler, forgotPasswordHandler, resetPasswordHandler } from '../controllers/auth.controller.js';
+import User from '../models/user.model.js';
+import CustomError from '../utils/customError.js';
 
 const router = express.Router();
 

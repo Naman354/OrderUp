@@ -4,11 +4,10 @@ import validator from 'validator';
 import CustomError from '../utils/customError.js'; // your custom error class
 import sendVerificationEmail from "../utils/sendVerificationEmail.js";
 import sendResetPasswordEmail from "../utils/sendResetPasswordEmail.js";
-import sgMail from "@sendgrid/mail";
 import crypto from "crypto";
 import dotenv from 'dotenv';
 dotenv.config();
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
 
 
 const generateToken = (user) => {
@@ -125,6 +124,10 @@ export const loginHandler = async (req, res, next) => {
     const user = await User.findOne({ email });
     if (!user) {
       throw new CustomError('Invalid credentials.', 400);
+    }
+
+    if (!user.emailVerified) {
+      throw new CustomError('Please verify your email before logging in.', 403);
     }
 
     const isMatch = await user.comparePassword(password);

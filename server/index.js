@@ -64,6 +64,10 @@ app.get("/error-test", (req, res, next) => {
   next(new Error("Testing centralized error handler"));
 });
 app.use(express.static(path.join(__dirname, "client/dist")));
+// SPA catch-all: serve index.html for any non-API route so client-side routing works
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client/dist", "index.html"));
+});
 app.use(errorHandler);
 
 connectDB();
